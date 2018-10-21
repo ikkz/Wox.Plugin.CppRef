@@ -24,4 +24,4 @@ wpm install CppRef
 
 #### 方法二：
 
-到Release中下载主题包，解压到wox主题文件夹中并重启wox
+到Release中下载插件包，解压到wox主题文件夹中并重启wox
