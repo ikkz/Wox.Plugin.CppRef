@@ -1,0 +1,12 @@
+{
+    "ID":"2af6da212f7849c6af3682d4bf11ce20",
+    "ActionKeyword":"cr",
+    "Name":"CppRef",
+    "Description":"c/c++ reference",
+    "Author":"cildhdi",
+    "Version":"1.0.0",
+    "Language":"csharp",
+    "Website":"https://github.com/cildhdi/Wox.Plugin.CppRef",
+    "IcoPath": "Images\\icon.png",
+    "ExecuteFileName":"Wox.Plugin.CppRef.dll"
+  }
