@@ -76,11 +76,15 @@ namespace Wox.Plugin.CppRef
                     ele = ele.FirstChild.NextSibling;
                     while (ele != null)
                     {
-                        HtmlNode node = ele.FirstChild.FirstChild;
+                        HtmlNode node = ele.FirstChild;
+                        if (node != null)
+                            node = node.FirstChild;
+                        if (node == null)
+                            break;
                         string direct_url = "https://zh.cppreference.com" + node.Attributes["href"].Value;
                         results.Add(new Result
                         {
-                            Title = node.InnerText,
+                            Title = Replace(node.InnerText),
                             IcoPath = "Images\\icon.png",
                             SubTitle = direct_url,
                             Action = e =>
@@ -89,7 +93,9 @@ namespace Wox.Plugin.CppRef
                                 return true;
                             }
                         });
-                        ele = ele.NextSibling.NextSibling;
+                        ele = ele.NextSibling;
+                        if (ele != null)
+                            ele = ele.NextSibling;
                     }
                 }
             }
@@ -117,6 +123,13 @@ namespace Wox.Plugin.CppRef
                 }
             }
             return null;
+        }
+
+        public static string Replace(string s)
+        {
+            string res = s.Replace("&lt;", "<");
+            res = res.Replace("&gt;", ">");
+            return res;
         }
     }
 }
