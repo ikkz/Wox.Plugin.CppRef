@@ -2,9 +2,12 @@
 
 一个快速查阅C/C++参考的插件
 
-![](http://img01.sogoucdn.com/app/a/100520146/da9545cb6d2326307d73a3d0b48b1c68)
+### 直接打开搜索页(网络差时建议使用)
+![](http://img02.sogoucdn.com/app/a/100520146/2be465c5b93434f5cb857d733ea4ff80)
 
-![](http://img01.sogoucdn.com/app/a/100520146/48f2c1bb8e0804491db6a3c742c2a814)
+### 列出搜索结果
+![](http://img02.sogoucdn.com/app/a/100520146/1acda2efd54c05366db52bb9484f8519)
+
 
 ### 安装Wox
 
