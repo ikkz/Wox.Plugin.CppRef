@@ -58,8 +58,8 @@ namespace Wox.Plugin.CppRef
             {
                 HtmlWeb html = new HtmlWeb();
                 HtmlDocument document = html.Load(url);
-                HtmlNode ele = GetElementByClass(document.GetElementbyId("mw-content-text"), "mw-search-results");
-                if (ele == null)
+                HtmlNode search_results = GetElementByClass(document.GetElementbyId("mw-content-text"), "mw-search-results");
+                if (search_results == null)
                 {
                     results.Add(new Result
                     {
@@ -73,14 +73,9 @@ namespace Wox.Plugin.CppRef
                 }
                 else
                 {
-                    ele = ele.FirstChild.NextSibling;
-                    while (ele != null)
+                    List<HtmlNode> nodes = GetAllSearchResults(search_results);
+                    foreach (HtmlNode node in nodes)
                     {
-                        HtmlNode node = ele.FirstChild;
-                        if (node != null)
-                            node = node.FirstChild;
-                        if (node == null)
-                            break;
                         string direct_url = "https://zh.cppreference.com" + node.Attributes["href"].Value;
                         results.Add(new Result
                         {
@@ -93,13 +88,21 @@ namespace Wox.Plugin.CppRef
                                 return true;
                             }
                         });
-                        ele = ele.NextSibling;
-                        if (ele != null)
-                            ele = ele.NextSibling;
                     }
+                    
                 }
             }
             return results;
+        }
+
+        public static List<HtmlNode> GetAllSearchResults(HtmlNode node)
+        {
+            List<HtmlNode> nodes = new List<HtmlNode>();
+            if (node.Name == "a")
+                nodes.Add(node);
+            foreach (HtmlNode child in node.ChildNodes)
+                nodes.AddRange(GetAllSearchResults(child));
+            return nodes;
         }
 
         public static HtmlNode GetElementByClass(HtmlNode root, string class_name)
