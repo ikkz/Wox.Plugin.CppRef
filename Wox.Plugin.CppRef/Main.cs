@@ -58,6 +58,22 @@ namespace Wox.Plugin.CppRef
             {
                 HtmlWeb html = new HtmlWeb();
                 HtmlDocument document = html.Load(url);
+                string title = document.DocumentNode.FirstChild.NextSibling.NextSibling.FirstChild.NextSibling.FirstChild.NextSibling.InnerText;
+                if (!title.Contains("搜索结果"))
+                {
+                    results.Add(new Result
+                    {
+                        Title = title.Replace(" - cppreference.com", ""),
+                        SubTitle = url,
+                        IcoPath = "Images\\icon.png",
+                        Action = e =>
+                        {
+                            System.Diagnostics.Process.Start(url);
+                            return true;
+                        }
+                    });
+                    return results;
+                }
                 HtmlNode search_results = GetElementByClass(document.GetElementbyId("mw-content-text"), "mw-search-results");
                 if (search_results == null)
                 {
@@ -79,7 +95,7 @@ namespace Wox.Plugin.CppRef
                         string direct_url = "https://zh.cppreference.com" + node.Attributes["href"].Value;
                         results.Add(new Result
                         {
-                            Title = Replace(node.InnerText),
+                            Title = node.InnerText.Replace("&lt;", "<").Replace("&gt;", ">"),
                             IcoPath = "Images\\icon.png",
                             SubTitle = direct_url,
                             Action = e =>
@@ -126,13 +142,6 @@ namespace Wox.Plugin.CppRef
                 }
             }
             return null;
-        }
-
-        public static string Replace(string s)
-        {
-            string res = s.Replace("&lt;", "<");
-            res = res.Replace("&gt;", ">");
-            return res;
         }
     }
 }
