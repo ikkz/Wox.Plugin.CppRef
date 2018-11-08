@@ -4,7 +4,7 @@
     "Name":"CppRef",
     "Description":"c/c++ reference",
     "Author":"cildhdi",
-    "Version":"1.0.0",
+    "Version":"2.1.0",
     "Language":"csharp",
     "Website":"https://github.com/cildhdi/Wox.Plugin.CppRef",
     "IcoPath": "Images\\icon.png",
