@@ -1,5 +1,7 @@
 # Wox.Plugin.CppRef
 
+[![Build Status](https://travis-ci.com/cildhdi/Wox.Plugin.CppRef.svg?branch=master)](https://travis-ci.com/cildhdi/Wox.Plugin.CppRef)
+
 一个快速查阅C/C++参考的插件
 
 ### 直接打开搜索页(网络差时建议使用)
