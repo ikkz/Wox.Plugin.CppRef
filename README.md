@@ -5,10 +5,10 @@
 一个快速查阅C/C++参考的插件
 
 ### 直接打开搜索页(网络差时建议使用)
-![](http://img02.sogoucdn.com/app/a/100520146/2be465c5b93434f5cb857d733ea4ff80)
+![](http://s.cildhdi.top/190510/crd.png)
 
 ### 列出搜索结果
-![](http://img02.sogoucdn.com/app/a/100520146/1acda2efd54c05366db52bb9484f8519)
+![](http://s.cildhdi.top/190510/cr.png)
 
 
 
