@@ -1,38 +1,61 @@
 ﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Wox.Plugin.CppRef
 {
-    enum Type
-    {
-        OPEN_PAGE,
-        SHOW_LIST
-    };
-
     public class Main : IPlugin
     {
+        private string config_file = "config.json";
+        private bool en;
+        private bool cpp;
+
+        private void SetEn(bool en)
+        {
+
+        }
+
+        private void SetCpp(bool cpp)
+        {
+
+        }
+
         public void Init(PluginInitContext context)
         {
+            if (!File.Exists(config_file))
+            {
+                en = true; cpp = true;
+            }
+            else
+            {
+                StreamReader sr = new StreamReader(config_file, System.Text.Encoding.Default);
+                string content = sr.ReadToEnd();
+                JObject jsonObject = (JObject)JsonConvert.DeserializeObject(content);
+                if (jsonObject.ContainsKey("en"))
+                    en = (jsonObject.GetValue("en").ToString().ToUpper().CompareTo("TRUE") == 0);
+                if (jsonObject.ContainsKey("cpp"))
+                    cpp = (jsonObject.GetValue("cpp").ToString().ToUpper().CompareTo("TRUE") == 0);
+                sr.Close();
+            }
         }
 
         public List<Result> Query(Query query)
         {
             List<Result> results = new List<Result>();
             string[] args = query.RawQuery.Split(' ');
-            Type type;
-            string url = "https://zh.cppreference.com/mwiki/index.php?search=";
+            bool open_page = false;
+            string url = en ? "https://en.cppreference.com/mwiki/index.php?search=" :
+                "https://zh.cppreference.com/mwiki/index.php?search=";
             if (args.Length >= 2)
             {
                 if (args[1].CompareTo("d") == 0)
-                    type = Type.OPEN_PAGE;
-                else
-                    type = Type.SHOW_LIST;
+                    open_page = true;
             }
             else
-            {
                 return results;
-            }
-            int index = (type == Type.OPEN_PAGE ? 2 : 1);
+            int index = (open_page ? 2 : 1);
             while (index < args.Length)
             {
                 url += args[index];
@@ -40,7 +63,7 @@ namespace Wox.Plugin.CppRef
                     url += '+';
                 index++;
             }
-            if (type == Type.OPEN_PAGE)
+            if (open_page)
             {
                 results.Add(new Result
                 {
@@ -54,12 +77,12 @@ namespace Wox.Plugin.CppRef
                     }
                 });
             }
-            else if (type == Type.SHOW_LIST)
+            else
             {
                 HtmlWeb html = new HtmlWeb();
                 HtmlDocument document = html.Load(url);
                 string title = document.DocumentNode.FirstChild.NextSibling.NextSibling.FirstChild.NextSibling.FirstChild.NextSibling.InnerText;
-                if (!title.Contains("搜索结果"))
+                if (!title.Contains(en ? "Search results" : "搜索结果"))
                 {
                     results.Add(new Result
                     {
@@ -92,7 +115,8 @@ namespace Wox.Plugin.CppRef
                     List<HtmlNode> nodes = GetAllSearchResults(search_results);
                     foreach (HtmlNode node in nodes)
                     {
-                        string direct_url = "https://zh.cppreference.com" + node.Attributes["href"].Value;
+                        string direct_url = "https://" + (en ? "en" : "zh") + ".cppreference.com"
+                            + node.Attributes["href"].Value;
                         results.Add(new Result
                         {
                             Title = node.InnerText.Replace("&lt;", "<").Replace("&gt;", ">"),
@@ -105,7 +129,7 @@ namespace Wox.Plugin.CppRef
                             }
                         });
                     }
-                    
+
                 }
             }
             return results;
