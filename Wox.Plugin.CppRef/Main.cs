@@ -9,24 +9,29 @@ namespace Wox.Plugin.CppRef
     public class Main : IPlugin
     {
         private string config_file = "config.json";
-        private bool en;
-        private bool cpp;
+        private bool _en;
+        private bool _cpp;
+
+        private void setEnCpp(bool en, bool cpp)
+        {
+            //todo
+        }
 
         private void SetEn(bool en)
         {
-
+            setEnCpp(en, _cpp);
         }
 
         private void SetCpp(bool cpp)
         {
-
+            setEnCpp(_en, cpp);
         }
 
         public void Init(PluginInitContext context)
         {
             if (!File.Exists(config_file))
             {
-                en = true; cpp = true;
+                _en = true; _cpp = true;
             }
             else
             {
@@ -34,9 +39,9 @@ namespace Wox.Plugin.CppRef
                 string content = sr.ReadToEnd();
                 JObject jsonObject = (JObject)JsonConvert.DeserializeObject(content);
                 if (jsonObject.ContainsKey("en"))
-                    en = (jsonObject.GetValue("en").ToString().ToUpper().CompareTo("TRUE") == 0);
+                    _en = (jsonObject.GetValue("en").ToString().ToUpper().CompareTo("TRUE") == 0);
                 if (jsonObject.ContainsKey("cpp"))
-                    cpp = (jsonObject.GetValue("cpp").ToString().ToUpper().CompareTo("TRUE") == 0);
+                    _cpp = (jsonObject.GetValue("cpp").ToString().ToUpper().CompareTo("TRUE") == 0);
                 sr.Close();
             }
         }
@@ -46,7 +51,7 @@ namespace Wox.Plugin.CppRef
             List<Result> results = new List<Result>();
             string[] args = query.RawQuery.Split(' ');
             bool open_page = false;
-            string url = en ? "https://en.cppreference.com/mwiki/index.php?search=" :
+            string url = _en ? "https://en.cppreference.com/mwiki/index.php?search=" :
                 "https://zh.cppreference.com/mwiki/index.php?search=";
             if (args.Length >= 2)
             {
@@ -82,7 +87,7 @@ namespace Wox.Plugin.CppRef
                 HtmlWeb html = new HtmlWeb();
                 HtmlDocument document = html.Load(url);
                 string title = document.DocumentNode.FirstChild.NextSibling.NextSibling.FirstChild.NextSibling.FirstChild.NextSibling.InnerText;
-                if (!title.Contains(en ? "Search results" : "搜索结果"))
+                if (!title.Contains(_en ? "Search results" : "搜索结果"))
                 {
                     results.Add(new Result
                     {
@@ -115,7 +120,7 @@ namespace Wox.Plugin.CppRef
                     List<HtmlNode> nodes = GetAllSearchResults(search_results);
                     foreach (HtmlNode node in nodes)
                     {
-                        string direct_url = "https://" + (en ? "en" : "zh") + ".cppreference.com"
+                        string direct_url = "https://" + (_en ? "en" : "zh") + ".cppreference.com"
                             + node.Attributes["href"].Value;
                         results.Add(new Result
                         {
