@@ -1,6 +1,6 @@
 # Wox.Plugin.CppRef
 
-[![Build Status](https://travis-ci.com/cildhdi/Wox.Plugin.CppRef.svg?branch=master)](https://travis-ci.com/cildhdi/Wox.Plugin.CppRef)
+[![Build Status](https://dev.azure.com/cildhdi/cildhdi/_apis/build/status/cildhdi.Wox.Plugin.CppRef?branchName=master)](https://dev.azure.com/cildhdi/cildhdi/_build/latest?definitionId=1&branchName=master)
 
 一个快速查阅C/C++参考的插件
 
@@ -8,9 +8,13 @@
 ![](http://s.cildhdi.top/190510/crd.png)
 
 ### 列出搜索结果
+#### cpp
 ![](http://s.cildhdi.top/190510/cr.png)
+#### c
+![](http://s.cildhdi.top/190608/c.png)
 
-
+### 设置 c/cpp 及语言
+![](http://s.cildhdi.top/190608/cr_config.png)
 
 ## 安装步骤
 
@@ -34,3 +38,4 @@
 ```
 wpm install CppRef
 ```
+

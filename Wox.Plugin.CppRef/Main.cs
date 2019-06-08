@@ -1,6 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,13 +6,17 @@ namespace Wox.Plugin.CppRef
 {
     public class Main : IPlugin
     {
-        private string config_file = "config.json";
+        private string config_file = "cr_config";
         private bool _en;
         private bool _cpp;
 
         private void setEnCpp(bool en, bool cpp)
         {
-            //todo
+            _en = en; _cpp = cpp;
+            using (StreamWriter sw = new StreamWriter(config_file, false))
+            {
+                sw.Write((en ? "T" : "F") + (cpp ? "T" : "F"));
+            }
         }
 
         private void SetEn(bool en)
@@ -35,14 +37,12 @@ namespace Wox.Plugin.CppRef
             }
             else
             {
-                StreamReader sr = new StreamReader(config_file, System.Text.Encoding.Default);
-                string content = sr.ReadToEnd();
-                JObject jsonObject = (JObject)JsonConvert.DeserializeObject(content);
-                if (jsonObject.ContainsKey("en"))
-                    _en = (jsonObject.GetValue("en").ToString().ToUpper().CompareTo("TRUE") == 0);
-                if (jsonObject.ContainsKey("cpp"))
-                    _cpp = (jsonObject.GetValue("cpp").ToString().ToUpper().CompareTo("TRUE") == 0);
-                sr.Close();
+                using (StreamReader sr = new StreamReader(config_file))
+                {
+                    string content = sr.ReadToEnd();
+                    _en = content.Length > 0 ? (content[0] == 'T') : true;
+                    _cpp = content.Length > 1 ? (content[1] == 'T') : true;
+                }
             }
         }
 
@@ -57,6 +57,30 @@ namespace Wox.Plugin.CppRef
             {
                 if (args[1].CompareTo("d") == 0)
                     open_page = true;
+                if (args[1].CompareTo("config") == 0)
+                {
+                    results.Add(new Result
+                    {
+                        Title = "change to " + (_en ? "zh" : "en"),
+                        IcoPath = "Images\\icon.png",
+                        Action = e =>
+                        {
+                            SetEn(!_en);
+                            return true;
+                        }
+                    });
+                    results.Add(new Result
+                    {
+                        Title = "change to " + (_cpp ? "c" : "cpp"),
+                        IcoPath = "Images\\icon.png",
+                        Action = e =>
+                        {
+                            SetCpp(!_cpp);
+                            return true;
+                        }
+                    });
+                    return results;
+                }
             }
             else
                 return results;
@@ -102,8 +126,8 @@ namespace Wox.Plugin.CppRef
                     });
                     return results;
                 }
-                HtmlNode search_results = GetElementByClass(document.GetElementbyId("mw-content-text"), "mw-search-results");
-                if (search_results == null)
+                List<HtmlNode> search_results = GetElementByClass(document.GetElementbyId("mw-content-text"), "mw-search-results");
+                if (search_results.Count == 0 || (search_results.Count == 1 && !_cpp))
                 {
                     results.Add(new Result
                     {
@@ -117,7 +141,7 @@ namespace Wox.Plugin.CppRef
                 }
                 else
                 {
-                    List<HtmlNode> nodes = GetAllSearchResults(search_results);
+                    List<HtmlNode> nodes = GetAllSearchResults(search_results[_cpp ? 0 : 1]);
                     foreach (HtmlNode node in nodes)
                     {
                         string direct_url = "https://" + (_en ? "en" : "zh") + ".cppreference.com"
@@ -150,8 +174,9 @@ namespace Wox.Plugin.CppRef
             return nodes;
         }
 
-        public static HtmlNode GetElementByClass(HtmlNode root, string class_name)
+        public static List<HtmlNode> GetElementByClass(HtmlNode root, string class_name)
         {
+            List<HtmlNode> res = new List<HtmlNode>();
             Queue<HtmlNode> nodes = new Queue<HtmlNode>();
             HtmlNode node = null;
             nodes.Enqueue(root);
@@ -167,10 +192,10 @@ namespace Wox.Plugin.CppRef
                 HtmlAttribute attribute = node.Attributes["class"];
                 if (attribute != null && attribute.Value == class_name)
                 {
-                    return node;
+                    res.Add(node);
                 }
             }
-            return null;
+            return res;
         }
     }
 }
